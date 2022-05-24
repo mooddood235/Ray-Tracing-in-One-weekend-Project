@@ -316,8 +316,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   applyPixelsCompute: {fileID: 7200000, guid: 17fbc3da9e7618e47adbc2d51aae2836, type: 3}
   aspectRatio: 1.7777778
-  texWidth: 900
+  texWidth: 1000
   viewPortHeight: 2
   focalLength: 2
-  samples: 150
+  samples: 200
   maxDepth: 50

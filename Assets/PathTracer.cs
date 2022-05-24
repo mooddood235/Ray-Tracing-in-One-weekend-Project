@@ -52,8 +52,8 @@ public class PathTracer : MonoBehaviour
 
         Lambertian matGround = new Lambertian(new Vector3(0.8f, 0.8f, 0f));
         Lambertian matCenter = new Lambertian(new Vector3(0.7f, 0.3f, 0.3f));
-        Metal matLeft = new Metal(new Vector3(0.8f, 0.8f, 0.8f));
-        Metal matRight = new Metal(new Vector3(0.8f, 0.6f, 0.2f));
+        Metal matLeft = new Metal(new Vector3(0.8f, 0.8f, 0.8f), 0.5f);
+        Metal matRight = new Metal(new Vector3(0.8f, 0.6f, 0.2f), 0f);
 
         scene.Add(new Sphere(new Vector3(0.0f, 0.0f, -1.0f), 0.5f, matCenter));
         scene.Add(new Sphere(new Vector3(0.0f, -100.5f, -1.0f), 100.0f, matGround));
