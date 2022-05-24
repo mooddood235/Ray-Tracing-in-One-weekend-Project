@@ -6,6 +6,7 @@ public class Sphere : IHittable
 {
     public Vector3 center;
     public float radius;
+    public IMaterial mat;
 
     public bool Hit(Ray ray, float tMin, float tMax, out HitRecord rec){
         rec = new HitRecord();
@@ -33,11 +34,13 @@ public class Sphere : IHittable
         rec.pos = ray.At(root);
         Vector3 outwardNormal = (rec.pos - center) / radius;
         rec.SetFaceNormal(ray, outwardNormal);
+        rec.mat = mat;
         return true;
     }
 
-    public Sphere(Vector3 center, float radius){
+    public Sphere(Vector3 center, float radius, IMaterial mat){
         this.center = center;
         this.radius = radius;
+        this.mat = mat;
     }
 }

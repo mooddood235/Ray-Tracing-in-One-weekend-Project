@@ -18,6 +18,7 @@ public class PathTracer : MonoBehaviour
     [SerializeField] private float focalLength;
     [Space]
     [SerializeField] private uint samples;
+    [SerializeField] private uint maxDepth;
 
     private Vector3[] pixels;
 
@@ -38,12 +39,26 @@ public class PathTracer : MonoBehaviour
         renderTexture.filterMode = FilterMode.Point;
         renderTexture.enableRandomWrite = true;
     }
-
-    private void Start()
+    private void Start() {
+        StartCoroutine(Render());
+    }
+    private void Update()
     {
+        DispatchApplyPixelsCompute();
+    }
+
+    private IEnumerator Render(){
         HittableList scene = new HittableList();
-        scene.Add(new Sphere(new Vector3(0f, 0f, -1), 0.5f));
-        scene.Add(new Sphere(new Vector3(0, -100.5f, -1), 100));
+
+        Lambertian matGround = new Lambertian(new Vector3(0.8f, 0.8f, 0f));
+        Lambertian matCenter = new Lambertian(new Vector3(0.7f, 0.3f, 0.3f));
+        Metal matLeft = new Metal(new Vector3(0.8f, 0.8f, 0.8f));
+        Metal matRight = new Metal(new Vector3(0.8f, 0.6f, 0.2f));
+
+        scene.Add(new Sphere(new Vector3(0.0f, 0.0f, -1.0f), 0.5f, matCenter));
+        scene.Add(new Sphere(new Vector3(0.0f, -100.5f, -1.0f), 100.0f, matGround));
+        scene.Add(new Sphere(new Vector3(-1.0f, 0.0f, -1.0f), 0.5f, matLeft));
+        scene.Add(new Sphere(new Vector3(1.0f, 0.0f, -1.0f), 0.5f, matRight));
 
         for (uint x = 0; x < texWidth; x++){
             for (uint y = 0; y < texHeight; y++){
@@ -53,13 +68,12 @@ public class PathTracer : MonoBehaviour
                     float v = (y + Random.Range(0f, 0.999f)) / (texHeight - 1);
 
                     Ray ray = new Ray(pCamera.pos, pCamera.lowerLeftCorner + u * pCamera.horizontal + v * pCamera.vertical - pCamera.pos);
-                    pixelColor += GetPixelColor(ray, scene);
+                    pixelColor += GetPixelColor(ray, scene, maxDepth);
                 }
                 WriteColor(x, y,  pixelColor);
             }
+            yield return null;
         }
-
-        DispatchApplyPixelsCompute();
     }
 
     private void DispatchApplyPixelsCompute(){
@@ -76,14 +90,23 @@ public class PathTracer : MonoBehaviour
     }
 
     private void WriteColor(uint x, uint y, Vector3 color){
-        color = (color / (float)samples).ClampedComponents();
+        color = (color / (float)samples).SqrtdComps().Clamped();
         pixels[y * texWidth + x] = color;
     }
 
-    private Vector3 GetPixelColor(Ray ray, IHittable scene){
+    private Vector3 GetPixelColor(Ray ray, IHittable scene, uint depth){
+
+        if (depth <= 0) return new Vector3(0f, 0f, 0f);
+
         HitRecord rec;
-        if (scene.Hit(ray, 0, Mathf.Infinity, out rec)){
-            return 0.5f * (rec.normal + Vector3.one);
+        if (scene.Hit(ray, 0.001f, Mathf.Infinity, out rec)){
+            Ray scattered;
+            Vector3 attenuation;
+
+            if (rec.mat.Scatter(ray, rec, out attenuation, out scattered)){
+                return Vector3Extensions.Multiply(attenuation, GetPixelColor(scattered, scene, depth - 1));
+            }
+            return Vector3.zero;
         }
         return SampleSkyBox(ray);
     }
