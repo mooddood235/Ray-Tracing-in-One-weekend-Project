@@ -51,13 +51,13 @@ public class PathTracer : MonoBehaviour
         HittableList scene = new HittableList();
 
         Lambertian matGround = new Lambertian(new Vector3(0.8f, 0.8f, 0f));
-        Lambertian matCenter = new Lambertian(new Vector3(0.7f, 0.3f, 0.3f));
-        Metal matLeft = new Metal(new Vector3(0.8f, 0.8f, 0.8f), 0.5f);
+        Lambertian matCenter = new Lambertian(new Vector3(0.1f, 0.2f, 0.5f));
+        Dielectric matLeft = new Dielectric(1.5f);
         Metal matRight = new Metal(new Vector3(0.8f, 0.6f, 0.2f), 0f);
 
         scene.Add(new Sphere(new Vector3(0.0f, 0.0f, -1.0f), 0.5f, matCenter));
         scene.Add(new Sphere(new Vector3(0.0f, -100.5f, -1.0f), 100.0f, matGround));
-        scene.Add(new Sphere(new Vector3(-1.0f, 0.0f, -1.0f), 0.5f, matLeft));
+        scene.Add(new Sphere(new Vector3(-1.0f, 0.0f, -1.0f), 0.4f, matLeft));
         scene.Add(new Sphere(new Vector3(1.0f, 0.0f, -1.0f), 0.5f, matRight));
 
         for (uint x = 0; x < texWidth; x++){

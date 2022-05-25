@@ -29,4 +29,10 @@ public static class Vector3Extensions
     public static Vector3 Multiply(Vector3 v1, Vector3 v2){
         return new Vector3(v1.x * v2.x, v1.y * v2.y, v1.z * v2.z);
     }
+    public static Vector3 Refract(Vector3 uv, Vector3 n, float etaiOveretat){
+        float cosTheta = Mathf.Min(Vector3.Dot(-uv, n), 1f);
+        Vector3 rOutPerp = etaiOveretat * (uv + cosTheta*n);
+        Vector3 rOutParallel = -Mathf.Sqrt(Mathf.Abs(1f - rOutPerp.sqrMagnitude)) * n;
+        return rOutPerp + rOutParallel;
+    }
 }
