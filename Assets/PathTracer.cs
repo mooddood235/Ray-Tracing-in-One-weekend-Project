@@ -13,8 +13,10 @@ public class PathTracer : MonoBehaviour
     [SerializeField] private float aspectRatio;
     [SerializeField] private uint texWidth;
     private uint texHeight;
-    [SerializeField] private float viewPortHeight;
-    private float viewPortWidth;
+    [Space]
+    [SerializeField] private Vector3 lookat;
+    [SerializeField] private Vector3 upVector;
+    [SerializeField] private float vFov;
     [SerializeField] private float focalLength;
     [Space]
     [SerializeField] private uint samples;
@@ -25,13 +27,8 @@ public class PathTracer : MonoBehaviour
 
     private void Awake() {
         texHeight = (uint)Mathf.RoundToInt(texWidth / aspectRatio);
-        viewPortWidth = aspectRatio * viewPortHeight;
-        
-        Vector3 horizontal = new Vector3(viewPortWidth, 0f, 0f);
-        Vector3 vertical = new Vector3(0f, viewPortHeight, 0f);
-        Vector3 lowerLeftCorner = transform.position - horizontal / 2f - vertical / 2f - new Vector3(0f, 0f, focalLength);
-
-        pCamera = new PCamera(transform.position, aspectRatio, texWidth, texHeight, viewPortWidth, viewPortHeight, focalLength, horizontal, vertical, lowerLeftCorner);
+       
+        pCamera = new PCamera(transform.position, lookat, upVector, vFov, aspectRatio, focalLength);
 
         pixels = new Vector3[texWidth * texHeight]; 
         
@@ -57,7 +54,7 @@ public class PathTracer : MonoBehaviour
 
         scene.Add(new Sphere(new Vector3(0.0f, 0.0f, -1.0f), 0.5f, matCenter));
         scene.Add(new Sphere(new Vector3(0.0f, -100.5f, -1.0f), 100.0f, matGround));
-        scene.Add(new Sphere(new Vector3(-1.0f, 0.0f, -1.0f), 0.4f, matLeft));
+        scene.Add(new Sphere(new Vector3(-1.0f, 0.0f, -1.0f), -0.4f, matLeft));
         scene.Add(new Sphere(new Vector3(1.0f, 0.0f, -1.0f), 0.5f, matRight));
 
         for (uint x = 0; x < texWidth; x++){
@@ -67,7 +64,7 @@ public class PathTracer : MonoBehaviour
                     float u = (x + Random.Range(0f, 0.999f)) / (texWidth - 1);
                     float v = (y + Random.Range(0f, 0.999f)) / (texHeight - 1);
 
-                    Ray ray = new Ray(pCamera.pos, pCamera.lowerLeftCorner + u * pCamera.horizontal + v * pCamera.vertical - pCamera.pos);
+                    Ray ray = pCamera.GetRay(u, v);
                     pixelColor += GetPixelColor(ray, scene, maxDepth);
                 }
                 WriteColor(x, y,  pixelColor);
