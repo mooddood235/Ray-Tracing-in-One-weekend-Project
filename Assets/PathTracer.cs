@@ -45,17 +45,7 @@ public class PathTracer : MonoBehaviour
     }
 
     private IEnumerator Render(){
-        HittableList scene = new HittableList();
-
-        Lambertian matGround = new Lambertian(new Vector3(0.8f, 0.8f, 0f));
-        Lambertian matCenter = new Lambertian(new Vector3(0.1f, 0.2f, 0.5f));
-        Dielectric matLeft = new Dielectric(1.5f);
-        Metal matRight = new Metal(new Vector3(0.8f, 0.6f, 0.2f), 0f);
-
-        scene.Add(new Sphere(new Vector3(0.0f, 0.0f, -1.0f), 0.5f, matCenter));
-        scene.Add(new Sphere(new Vector3(0.0f, -100.5f, -1.0f), 100.0f, matGround));
-        scene.Add(new Sphere(new Vector3(-1.0f, 0.0f, -1.0f), -0.4f, matLeft));
-        scene.Add(new Sphere(new Vector3(1.0f, 0.0f, -1.0f), 0.5f, matRight));
+        HittableList scene = GenerateRandomScene();
 
         for (uint x = 0; x < texWidth; x++){
             for (uint y = 0; y < texHeight; y++){
@@ -112,6 +102,48 @@ public class PathTracer : MonoBehaviour
         Vector3 unitDir = ray.dir.normalized;
         float t = 0.5f*(unitDir.y + 1f);
         return (1f - t) * new Vector3(1f, 1f, 1f) + t * new Vector3(0.5f, 0.7f, 1f);
+    }
+
+    HittableList GenerateRandomScene(){
+        HittableList scene = new HittableList();
+
+        Lambertian groundMat = new Lambertian(new Vector3(0.5f, 0.5f, 0.5f));
+        scene.Add(new Sphere(new Vector3(0f, -1000f, 0f), 1000f, groundMat));
+
+        for (int a = -11; a < 11; a++){
+            for (int b = -11; b < 11; b++){
+                float chooseMat = Random.Range(0f, 1f);
+                Vector3 center = new Vector3(a + 0.9f * Random.Range(0f, 1f), 0.2f, b + 0.9f * Random.Range(0f, 1f));
+
+                if ((center - new Vector3(4f, 0.2f, 0)).magnitude > 0.9f){
+                    IMaterial mat;
+
+                    if (chooseMat < 0.8f){
+                        Vector3 albedo = Vector3Extensions.Multiply(Vector3Extensions.RandomComps(0f, 1f), Vector3Extensions.RandomComps(0f, 1f));
+                        mat = new Lambertian(albedo);
+                    }
+                    else if (chooseMat < 0.95f){
+                        Vector3 albedo = Vector3Extensions.RandomComps(0.5f, 1f);
+                        float fuzz = Random.Range(0f, 0.5f);
+                        mat = new Metal(albedo, fuzz);
+                    }
+                    else{
+                        mat = new Dielectric(1.5f);
+                    }
+                    scene.Add(new Sphere(center, 0.2f, mat));
+                }
+            }
+        }
+        Dielectric mat1 = new Dielectric(1.5f);
+        scene.Add(new Sphere(new Vector3(0, 1f, 0), 1f, mat1));
+
+        Lambertian mat2 = new Lambertian(new Vector3(0.5f, 0.2f, 0.1f));
+        scene.Add(new Sphere(new Vector3(-4f, 1f, 0), 1f, mat2));
+
+        Metal mat3 = new Metal(new Vector3(0.7f, 0.6f, 0.5f), 0f);
+        scene.Add(new Sphere(new Vector3(4f, 1f, 0f), 1f, mat3));
+
+        return scene;
     }
     private void OnRenderImage(RenderTexture src, RenderTexture dest) {
         Graphics.Blit(renderTexture, dest);
