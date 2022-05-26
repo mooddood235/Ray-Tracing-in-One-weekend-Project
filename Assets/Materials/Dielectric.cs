@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Dielectric : IMaterial
+public struct Dielectric : IMaterial
 {
     // Index of refraction.
     public float ir;

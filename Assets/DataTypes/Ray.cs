@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Ray
+public struct Ray
 {
     public Vector3 origin;
     public Vector3 dir;

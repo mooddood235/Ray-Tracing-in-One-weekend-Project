@@ -4,11 +4,12 @@ using UnityEngine;
 
 public static class Vector3Extensions
 {
+    public static Unity.Mathematics.Random rand;
     public static Vector3 Clamped(this Vector3 v){
         return new Vector3(Mathf.Clamp01(v.x), Mathf.Clamp01(v.y), Mathf.Clamp01(v.z));
     }
     public static Vector3 RandomComps(float min, float max){
-        return new Vector3(Random.Range(min, max), Random.Range(min, max), Random.Range(min, max));
+        return new Vector3(rand.NextFloat(min, max), rand.NextFloat(min, max), rand.NextFloat(min, max));
     }
     public static Vector3 RandomInUnitSphere(){
         while (true){

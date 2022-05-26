@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Threading;
 
 [RequireComponent(typeof(Transform))]
 [RequireComponent(typeof(Camera))]
@@ -26,6 +27,8 @@ public class PathTracer : MonoBehaviour
 
 
     private void Awake() {
+        Vector3Extensions.rand = new Unity.Mathematics.Random((uint)Random.Range(0, 5000));
+
         texHeight = (uint)Mathf.RoundToInt(texWidth / aspectRatio);
        
         pCamera = new PCamera(transform.position, lookat, upVector, vFov, aspectRatio, focalLength);
@@ -37,30 +40,40 @@ public class PathTracer : MonoBehaviour
         renderTexture.enableRandomWrite = true;
     }
     private void Start() {
-        StartCoroutine(Render());
+        Render();
     }
     private void Update()
     {
         DispatchApplyPixelsCompute();
     }
 
-    private IEnumerator Render(){
-        HittableList scene = GenerateRandomScene();
+    private void Render(){
+        HittableList scene = new HittableList(null); //GenerateRandomScene();
+        scene.Add(new Sphere(new Vector3(0f, 0f, -1f), 0.5f, new Metal(new Vector3(0.2f, 0.5f, 0.3f), 0.05f)));
+        scene.Add(new Sphere(new Vector3(0f, -100.5f, -1f), 100f, new Lambertian(new Vector3(0.5f, 0.5f, 0.5f))));
+        
+        RenderThread renderThread1 = new RenderThread(pixels,
+        0, texWidth / 2, 0, texHeight - 1, texWidth, texHeight, pCamera, samples, maxDepth, scene);
+        
+        RenderThread renderThread2 = new RenderThread(pixels,
+        texWidth / 2 + 1, texWidth - 1, 0, texHeight - 1, texWidth, texHeight, pCamera, samples, maxDepth, scene);
 
-        for (uint x = 0; x < texWidth; x++){
-            for (uint y = 0; y < texHeight; y++){
-                Vector3 pixelColor = Vector3.zero;
-                for (uint s = 0; s < samples; s++){
-                    float u = (x + Random.Range(0f, 0.999f)) / (texWidth - 1);
-                    float v = (y + Random.Range(0f, 0.999f)) / (texHeight - 1);
+        renderThread1.Render();
+        renderThread2.Render();
 
-                    Ray ray = pCamera.GetRay(u, v);
-                    pixelColor += GetPixelColor(ray, scene, maxDepth);
-                }
-                WriteColor(x, y,  pixelColor);
-            }
-            yield return null;
-        }
+        // for (uint x = 0; x < texWidth; x++){
+        //     for (uint y = 0; y < texHeight; y++){
+        //         Vector3 pixelColor = Vector3.zero;
+        //         for (uint s = 0; s < samples; s++){
+        //             float u = (x + Random.Range(0f, 0.999f)) / (texWidth - 1);
+        //             float v = (y + Random.Range(0f, 0.999f)) / (texHeight - 1);
+
+        //             Ray ray = pCamera.GetRay(u, v);
+        //             pixelColor += GetPixelColor(ray, scene, maxDepth);
+        //         }
+        //         WriteColor(x, y,  pixelColor);
+        //     }
+        // }
     }
 
     private void DispatchApplyPixelsCompute(){
@@ -105,7 +118,7 @@ public class PathTracer : MonoBehaviour
     }
 
     HittableList GenerateRandomScene(){
-        HittableList scene = new HittableList();
+        HittableList scene = new HittableList(null);
 
         Lambertian groundMat = new Lambertian(new Vector3(0.5f, 0.5f, 0.5f));
         scene.Add(new Sphere(new Vector3(0f, -1000f, 0f), 1000f, groundMat));

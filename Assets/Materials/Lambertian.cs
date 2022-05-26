@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Lambertian : IMaterial
+public struct Lambertian : IMaterial
 {
     public Vector3 albedo;
     public bool Scatter(Ray rayIn, HitRecord rec, out Vector3 attenuation, out Ray scattered){

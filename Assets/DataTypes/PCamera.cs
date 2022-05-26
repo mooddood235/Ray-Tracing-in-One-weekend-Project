@@ -2,15 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PCamera
+public struct PCamera
 {
     public Vector3 pos;
     public Vector3 lookat;
     public Vector3 upVector;
     public float vFov;
     public float aspectRatio;
-    public uint texWidth;
-    public uint texHeight;
     public float viewPortHeight;
     public float viewPortWidth;
     public float focalLength;
@@ -26,6 +24,8 @@ public class PCamera
         
         this.pos = pos;
         this.vFov = vFov;
+        this.lookat = lookat;
+        this.upVector = upVector;
 
         float theta = vFov * Mathf.PI / 180f; // Degrees to radians.
         float h = Mathf.Tan(theta / 2f);

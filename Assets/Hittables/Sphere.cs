@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Sphere : IHittable
+public struct Sphere : IHittable
 {
     public Vector3 center;
     public float radius;

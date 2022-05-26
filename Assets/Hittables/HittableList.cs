@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HittableList : IHittable
+public struct HittableList : IHittable
 {
     private List<IHittable> objects;
 
@@ -29,7 +29,7 @@ public class HittableList : IHittable
         objects.Clear();
     }
 
-    public HittableList(){
+    public HittableList(object dummy){
         objects = new List<IHittable>();
     }
 }

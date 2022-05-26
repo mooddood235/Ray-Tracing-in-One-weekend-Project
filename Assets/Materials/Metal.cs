@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Metal : IMaterial
+public struct Metal : IMaterial
 {
     public Vector3 albedo;
     public float fuzz;
