@@ -22,6 +22,7 @@ public class PathTracer : MonoBehaviour
     [Space]
     [SerializeField] private uint samples;
     [SerializeField] private uint maxDepth;
+    [SerializeField] private uint threadCount;
 
     private Vector3[] pixels;
 
@@ -48,32 +49,9 @@ public class PathTracer : MonoBehaviour
     }
 
     private void Render(){
-        HittableList scene = new HittableList(null); //GenerateRandomScene();
-        scene.Add(new Sphere(new Vector3(0f, 0f, -1f), 0.5f, new Metal(new Vector3(0.2f, 0.5f, 0.3f), 0.05f)));
-        scene.Add(new Sphere(new Vector3(0f, -100.5f, -1f), 100f, new Lambertian(new Vector3(0.5f, 0.5f, 0.5f))));
-        
-        RenderThread renderThread1 = new RenderThread(pixels,
-        0, texWidth / 2, 0, texHeight - 1, texWidth, texHeight, pCamera, samples, maxDepth, scene);
-        
-        RenderThread renderThread2 = new RenderThread(pixels,
-        texWidth / 2 + 1, texWidth - 1, 0, texHeight - 1, texWidth, texHeight, pCamera, samples, maxDepth, scene);
-
-        renderThread1.Render();
-        renderThread2.Render();
-
-        // for (uint x = 0; x < texWidth; x++){
-        //     for (uint y = 0; y < texHeight; y++){
-        //         Vector3 pixelColor = Vector3.zero;
-        //         for (uint s = 0; s < samples; s++){
-        //             float u = (x + Random.Range(0f, 0.999f)) / (texWidth - 1);
-        //             float v = (y + Random.Range(0f, 0.999f)) / (texHeight - 1);
-
-        //             Ray ray = pCamera.GetRay(u, v);
-        //             pixelColor += GetPixelColor(ray, scene, maxDepth);
-        //         }
-        //         WriteColor(x, y,  pixelColor);
-        //     }
-        // }
+        HittableList scene = GenerateRandomScene();
+        RenderThreadArray renderThreadArray = new RenderThreadArray(threadCount, pixels, texWidth, texHeight, pCamera, samples, maxDepth, scene);
+        renderThreadArray.Render();
     }
 
     private void DispatchApplyPixelsCompute(){
@@ -87,34 +65,6 @@ public class PathTracer : MonoBehaviour
 
         applyPixelsCompute.Dispatch(0, (int)texWidth, (int)texHeight, 1);
         pixelsCB.Dispose();
-    }
-
-    private void WriteColor(uint x, uint y, Vector3 color){
-        color = (color / (float)samples).SqrtdComps().Clamped();
-        pixels[y * texWidth + x] = color;
-    }
-
-    private Vector3 GetPixelColor(Ray ray, IHittable scene, uint depth){
-
-        if (depth <= 0) return new Vector3(0f, 0f, 0f);
-
-        HitRecord rec;
-        if (scene.Hit(ray, 0.001f, Mathf.Infinity, out rec)){
-            Ray scattered;
-            Vector3 attenuation;
-
-            if (rec.mat.Scatter(ray, rec, out attenuation, out scattered)){
-                return Vector3Extensions.Multiply(attenuation, GetPixelColor(scattered, scene, depth - 1));
-            }
-            return Vector3.zero;
-        }
-        return SampleSkyBox(ray);
-    }
-
-    private Vector3 SampleSkyBox(Ray ray){
-        Vector3 unitDir = ray.dir.normalized;
-        float t = 0.5f*(unitDir.y + 1f);
-        return (1f - t) * new Vector3(1f, 1f, 1f) + t * new Vector3(0.5f, 0.7f, 1f);
     }
 
     HittableList GenerateRandomScene(){
@@ -141,13 +91,13 @@ public class PathTracer : MonoBehaviour
                         mat = new Metal(albedo, fuzz);
                     }
                     else{
-                        mat = new Dielectric(1.5f);
+                        mat = new Dielectric(1.5f, (uint)Random.Range(0, 5000));
                     }
                     scene.Add(new Sphere(center, 0.2f, mat));
                 }
             }
         }
-        Dielectric mat1 = new Dielectric(1.5f);
+        Dielectric mat1 = new Dielectric(1.5f, (uint)Random.Range(0, 5000));
         scene.Add(new Sphere(new Vector3(0, 1f, 0), 1f, mat1));
 
         Lambertian mat2 = new Lambertian(new Vector3(0.5f, 0.2f, 0.1f));

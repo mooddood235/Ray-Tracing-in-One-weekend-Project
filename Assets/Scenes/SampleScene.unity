@@ -295,7 +295,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 2}
+  m_LocalPosition: {x: 13, y: 2, z: 3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -316,10 +316,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   applyPixelsCompute: {fileID: 7200000, guid: 17fbc3da9e7618e47adbc2d51aae2836, type: 3}
   aspectRatio: 1.7777778
-  texWidth: 900
+  texWidth: 1200
   lookat: {x: 0, y: 0, z: 0}
   upVector: {x: 0, y: 1, z: 0}
-  vFov: 45
-  focalLength: 2
-  samples: 100
-  maxDepth: 10
+  vFov: 20
+  focalLength: 1
+  samples: 500
+  maxDepth: 50
+  threadCount: 12

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public struct Dielectric : IMaterial
 {
+    private Unity.Mathematics.Random rand;
     // Index of refraction.
     public float ir;
     public bool Scatter(Ray rayIn, HitRecord rec, out Vector3 attenuation, out Ray scattered){
@@ -17,7 +18,7 @@ public struct Dielectric : IMaterial
         bool cannotRefract = refractionRatio * sinTheta > 1f;
         Vector3 dir;
 
-        if (cannotRefract || Reflectance(cosTheta, refractionRatio) > Random.Range(0f, 1f))
+        if (cannotRefract || Reflectance(cosTheta, refractionRatio) > rand.NextFloat(0f, 1f))
             dir = Vector3.Reflect(unitDir, rec.normal);
         else
             dir = Vector3Extensions.Refract(unitDir, rec.normal, refractionRatio);
@@ -31,7 +32,8 @@ public struct Dielectric : IMaterial
         r0 = r0 * r0;
         return r0 + (1f-r0)* Mathf.Pow((1f - cosine), 5f);
     }
-    public Dielectric(float ir){
+    public Dielectric(float ir, uint randSeed){
+        this.rand = new Unity.Mathematics.Random(randSeed);
         this.ir = ir;
     }
 }
