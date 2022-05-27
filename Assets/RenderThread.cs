@@ -18,6 +18,7 @@ public class RenderThread
     private uint maxDepth;
     private HittableList scene;
     private Unity.Mathematics.Random rand;
+    private bool stop;
 
 
     public void Render(){
@@ -27,6 +28,7 @@ public class RenderThread
     private void ThreadRender(){
         for (uint x = x0; x <= x1; x++){
             for (uint y = y0; y <= y1; y++){
+                if (stop) return;
                 Vector3 pixelColor = Vector3.zero;
                 for (uint s = 0; s < samples; s++){
                     float u = (x + rand.NextFloat(0f, 0.999f)) / (texWidth - 1);
@@ -65,6 +67,9 @@ public class RenderThread
         color = (color / (float)samples).SqrtdComps().Clamped();
         pixels[y * texWidth + x] = color;
     }
+    public void Stop(){
+        stop = true;
+    }
 
     public RenderThread(Vector3[] pixels, uint x0, uint x1, uint y0, uint y1, uint texWidth, uint texHeight, PCamera pCamera, uint samples, uint maxDepth, HittableList scene){
         this.pixels = pixels;
@@ -78,7 +83,7 @@ public class RenderThread
         this.samples = samples;
         this.maxDepth = maxDepth;
         this.scene = scene;
-
+        this.stop = false;
         this.rand = new Unity.Mathematics.Random((uint)Random.Range(0, 5000));
     }
 }

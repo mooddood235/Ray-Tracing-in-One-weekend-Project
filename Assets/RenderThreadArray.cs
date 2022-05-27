@@ -19,6 +19,11 @@ public class RenderThreadArray
             renderThread.Render();
         }
     }
+    public void Stop(){
+        foreach (RenderThread renderThread in renderThreads){
+            renderThread.Stop();
+        }
+    }
 
     private void CreateRenderThreads(){
         renderThreads = new RenderThread[threadCount];

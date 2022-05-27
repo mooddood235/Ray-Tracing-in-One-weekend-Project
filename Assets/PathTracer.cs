@@ -22,6 +22,7 @@ public class PathTracer : MonoBehaviour
     [Space]
     [SerializeField] private uint samples;
     [SerializeField] private uint maxDepth;
+    private RenderThreadArray renderThreadArray;
     [SerializeField] private uint threadCount;
 
     private Vector3[] pixels;
@@ -50,7 +51,7 @@ public class PathTracer : MonoBehaviour
 
     private void Render(){
         HittableList scene = GenerateRandomScene();
-        RenderThreadArray renderThreadArray = new RenderThreadArray(threadCount, pixels, texWidth, texHeight, pCamera, samples, maxDepth, scene);
+        renderThreadArray = new RenderThreadArray(threadCount, pixels, texWidth, texHeight, pCamera, samples, maxDepth, scene);
         renderThreadArray.Render();
     }
 
@@ -110,5 +111,8 @@ public class PathTracer : MonoBehaviour
     }
     private void OnRenderImage(RenderTexture src, RenderTexture dest) {
         Graphics.Blit(renderTexture, dest);
+    }
+    private void OnApplicationQuit() {
+        renderThreadArray.Stop();
     }
 }
