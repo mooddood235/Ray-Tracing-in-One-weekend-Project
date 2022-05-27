@@ -9,13 +9,20 @@ public static class Vector3Extensions
         return new Vector3(Mathf.Clamp01(v.x), Mathf.Clamp01(v.y), Mathf.Clamp01(v.z));
     }
     public static Vector3 RandomComps(float min, float max){
-        return new Vector3(rand.NextFloat(min, max), rand.NextFloat(min, max), rand.NextFloat(min, max));
+        return rand.NextFloat3(min, max);
     }
     public static Vector3 RandomInUnitSphere(){
         while (true){
             Vector3 v = RandomComps(-1f, 1f);
             if (v.sqrMagnitude >= 1) continue;
             return v;
+        }
+    }
+    public static Vector3 RandomInUnitCircle(){
+        while (true){
+            Vector2 pos = rand.NextFloat2(-1f, 1f);
+            if (pos.sqrMagnitude >= 1) continue;
+            return new Vector3(pos.x, pos.y, 0);
         }
     }
     public static Vector3 SqrtdComps(this Vector3 v){

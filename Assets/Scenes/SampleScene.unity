@@ -316,11 +316,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   applyPixelsCompute: {fileID: 7200000, guid: 17fbc3da9e7618e47adbc2d51aae2836, type: 3}
   aspectRatio: 1.7777778
-  texWidth: 200
+  texWidth: 1920
   lookat: {x: 0, y: 0, z: 0}
   upVector: {x: 0, y: 1, z: 0}
   vFov: 20
   focalLength: 1
-  samples: 50
+  focusDist: 13.4
+  aperture: 0.1
+  samples: 30
   maxDepth: 50
-  threadCount: 12
+  threadCount: 100

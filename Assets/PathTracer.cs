@@ -19,21 +19,23 @@ public class PathTracer : MonoBehaviour
     [SerializeField] private Vector3 upVector;
     [SerializeField] private float vFov;
     [SerializeField] private float focalLength;
+    [SerializeField] private float focusDist;
+    [SerializeField] private float aperture;
     [Space]
     [SerializeField] private uint samples;
     [SerializeField] private uint maxDepth;
     private RenderThreadArray renderThreadArray;
+    [Space]
     [SerializeField] private uint threadCount;
 
     private Vector3[] pixels;
 
-
     private void Awake() {
-        Vector3Extensions.rand = new Unity.Mathematics.Random((uint)Random.Range(0, 5000));
+        Vector3Extensions.rand = new Unity.Mathematics.Random((uint)Random.Range(1, 5000));
 
         texHeight = (uint)Mathf.RoundToInt(texWidth / aspectRatio);
        
-        pCamera = new PCamera(transform.position, lookat, upVector, vFov, aspectRatio, focalLength);
+        pCamera = new PCamera(transform.position, lookat, upVector, vFov, aspectRatio, aperture, focusDist, focalLength);
 
         pixels = new Vector3[texWidth * texHeight]; 
         
@@ -92,13 +94,13 @@ public class PathTracer : MonoBehaviour
                         mat = new Metal(albedo, fuzz);
                     }
                     else{
-                        mat = new Dielectric(1.5f, (uint)Random.Range(0, 5000));
+                        mat = new Dielectric(1.5f, (uint)Random.Range(1, 5000));
                     }
                     scene.Add(new Sphere(center, 0.2f, mat));
                 }
             }
         }
-        Dielectric mat1 = new Dielectric(1.5f, (uint)Random.Range(0, 5000));
+        Dielectric mat1 = new Dielectric(1.5f, (uint)Random.Range(1, 5000));
         scene.Add(new Sphere(new Vector3(0, 1f, 0), 1f, mat1));
 
         Lambertian mat2 = new Lambertian(new Vector3(0.5f, 0.2f, 0.1f));

@@ -84,6 +84,6 @@ public class RenderThread
         this.maxDepth = maxDepth;
         this.scene = scene;
         this.stop = false;
-        this.rand = new Unity.Mathematics.Random((uint)Random.Range(0, 5000));
+        this.rand = new Unity.Mathematics.Random((uint)Random.Range(1, 5000));
     }
 }
