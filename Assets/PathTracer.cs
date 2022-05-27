@@ -82,11 +82,11 @@ public class PathTracer : MonoBehaviour
                 if ((center - new Vector3(4f, 0.2f, 0)).magnitude > 0.9f){
                     IMaterial mat;
 
-                    if (chooseMat < 0.8f){
+                    if (chooseMat < 0.33f){
                         Vector3 albedo = Vector3Extensions.Multiply(Vector3Extensions.RandomComps(0f, 1f), Vector3Extensions.RandomComps(0f, 1f));
                         mat = new Lambertian(albedo);
                     }
-                    else if (chooseMat < 0.95f){
+                    else if (chooseMat < 0.77f){
                         Vector3 albedo = Vector3Extensions.RandomComps(0.5f, 1f);
                         float fuzz = Random.Range(0f, 0.5f);
                         mat = new Metal(albedo, fuzz);
