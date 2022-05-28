@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public struct HitRecord
+public class HitRecord
 {
     public Vector3 pos;
     public Vector3 normal;

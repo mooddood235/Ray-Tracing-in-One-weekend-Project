@@ -12,7 +12,7 @@ public class RenderThreadArray
     private PCamera pCamera;
     private uint samples;
     private uint maxDepth;
-    private HittableList scene;
+    private IHittable scene;
 
     public void Render(){
         foreach (RenderThread renderThread in renderThreads){
@@ -33,7 +33,7 @@ public class RenderThreadArray
             pixels, i * segment, (i + 1) * segment - 1, 0, texHeight - 1, texWidth, texHeight, pCamera, samples, maxDepth, scene);
         }
     }
-    public RenderThreadArray(uint threadCount, Vector3[] pixels, uint texWidth, uint texHeight, PCamera pCamera, uint samples, uint maxDepth, HittableList scene){
+    public RenderThreadArray(uint threadCount, Vector3[] pixels, uint texWidth, uint texHeight, PCamera pCamera, uint samples, uint maxDepth, IHittable scene){
         this.threadCount = threadCount;
         this.pixels = pixels;
         this.texWidth = texWidth;

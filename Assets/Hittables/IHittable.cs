@@ -4,5 +4,6 @@ using UnityEngine;
 
 public interface IHittable
 {
-    bool Hit(Ray ray, float tMin, float tMax, out HitRecord rec);
+    bool Hit(Ray ray, float tMin, float tMax, HitRecord rec);
+    bool BoundingBox(out AABB outputBox);
 }

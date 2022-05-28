@@ -16,7 +16,7 @@ public class RenderThread
     private PCamera pCamera;
     private uint samples;
     private uint maxDepth;
-    private HittableList scene;
+    private IHittable scene;
     private Unity.Mathematics.Random rand;
     private bool stop;
 
@@ -46,11 +46,10 @@ public class RenderThread
 
         if (depth <= 0) return new Vector3(0f, 0f, 0f);
 
-        HitRecord rec;
-        if (scene.Hit(ray, 0.001f, Mathf.Infinity, out rec)){
+        HitRecord rec = new HitRecord();
+        if (scene.Hit(ray, 0.001f, Mathf.Infinity, rec)){
             Ray scattered;
             Vector3 attenuation;
-
             if (rec.mat.Scatter(ray, rec, out attenuation, out scattered)){
                 return Vector3Extensions.Multiply(attenuation, GetPixelColor(scattered, scene, depth - 1));
             }
@@ -71,7 +70,7 @@ public class RenderThread
         stop = true;
     }
 
-    public RenderThread(Vector3[] pixels, uint x0, uint x1, uint y0, uint y1, uint texWidth, uint texHeight, PCamera pCamera, uint samples, uint maxDepth, HittableList scene){
+    public RenderThread(Vector3[] pixels, uint x0, uint x1, uint y0, uint y1, uint texWidth, uint texHeight, PCamera pCamera, uint samples, uint maxDepth, IHittable scene){
         this.pixels = pixels;
         this.x0 = x0;
         this.x1 = x1;

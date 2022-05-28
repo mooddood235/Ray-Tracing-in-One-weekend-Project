@@ -8,9 +8,7 @@ public struct Sphere : IHittable
     public float radius;
     public IMaterial mat;
 
-    public bool Hit(Ray ray, float tMin, float tMax, out HitRecord rec){
-        rec = new HitRecord();
-
+    public bool Hit(Ray ray, float tMin, float tMax, HitRecord rec){
         Vector3 oc = ray.origin - center;
         float a = ray.dir.sqrMagnitude;
         float halfB = Vector3.Dot(oc, ray.dir);
@@ -37,7 +35,11 @@ public struct Sphere : IHittable
         rec.mat = mat;
         return true;
     }
-
+    public bool BoundingBox(out AABB outputBox){
+        Vector3 offset = new Vector3(radius, radius, radius);
+        outputBox = new AABB(center - offset, center + offset);
+        return true;
+    }
     public Sphere(Vector3 center, float radius, IMaterial mat){
         this.center = center;
         this.radius = radius;

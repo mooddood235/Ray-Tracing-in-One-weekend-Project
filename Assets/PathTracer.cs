@@ -52,7 +52,8 @@ public class PathTracer : MonoBehaviour
     }
 
     private void Render(){
-        HittableList scene = GenerateRandomScene();
+        List<IHittable> objects = GenerateRandomScene();
+        BVHNode scene = new BVHNode(objects, 0, objects.Count);
         renderThreadArray = new RenderThreadArray(threadCount, pixels, texWidth, texHeight, pCamera, samples, maxDepth, scene);
         renderThreadArray.Render();
     }
@@ -70,8 +71,8 @@ public class PathTracer : MonoBehaviour
         pixelsCB.Dispose();
     }
 
-    HittableList GenerateRandomScene(){
-        HittableList scene = new HittableList(null);
+    List<IHittable> GenerateRandomScene(){
+        List<IHittable> scene = new List<IHittable>();
 
         Lambertian groundMat = new Lambertian(new Vector3(0.5f, 0.5f, 0.5f));
         scene.Add(new Sphere(new Vector3(0f, -1000f, 0f), 1000f, groundMat));
