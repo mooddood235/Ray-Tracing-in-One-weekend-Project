@@ -2,12 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public struct Dielectric : IMaterial
+public class Dielectric : Material
 {
     private Unity.Mathematics.Random rand;
     // Index of refraction.
     public float ir;
-    public bool Scatter(Ray rayIn, HitRecord rec, out Vector3 attenuation, out Ray scattered){
+    public override bool Scatter(Ray rayIn, HitRecord rec, out Vector3 attenuation, out Ray scattered){
         attenuation = Vector3.one;
         float refractionRatio = rec.frontFace ? (1f/ir) : ir;
 

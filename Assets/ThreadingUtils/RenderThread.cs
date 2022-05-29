@@ -51,16 +51,17 @@ public class RenderThread
             Ray scattered;
             Vector3 attenuation;
             if (rec.mat.Scatter(ray, rec, out attenuation, out scattered)){
-                return Vector3Extensions.Multiply(attenuation, GetPixelColor(scattered, scene, depth - 1));
+                return rec.mat.Emitted() + Vector3Extensions.Multiply(attenuation, GetPixelColor(scattered, scene, depth - 1));
             }
-            return Vector3.zero;
+            return rec.mat.Emitted();
         }
         return SampleSkyBox(ray);
     }
     private Vector3 SampleSkyBox(Ray ray){
         Vector3 unitDir = ray.dir.normalized;
         float t = 0.5f*(unitDir.y + 1f);
-        return (1f - t) * new Vector3(1f, 1f, 1f) + t * new Vector3(0.5f, 0.7f, 1f);
+        //return (1f - t) * new Vector3(1f, 1f, 1f) + t * new Vector3(0.5f, 0.7f, 1f);
+        return Vector3.zero;
     }
     private void WriteColor(uint x, uint y, Vector3 color){
         color = (color / (float)samples).SqrtdComps().Clamped();

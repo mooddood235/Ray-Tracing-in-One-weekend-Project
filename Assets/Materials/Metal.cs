@@ -2,12 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public struct Metal : IMaterial
+public class Metal : Material
 {
     public Vector3 albedo;
     public float fuzz;
 
-    public bool Scatter(Ray rayIn, HitRecord rec, out Vector3 attenuation, out Ray scattered){
+    public override bool Scatter(Ray rayIn, HitRecord rec, out Vector3 attenuation, out Ray scattered){
         Vector3 reflected = Vector3.Reflect(rayIn.dir, rec.normal).normalized;
         scattered = new Ray(rec.pos, reflected + fuzz * Vector3Extensions.RandomInUnitSphere());
         attenuation = albedo;

@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public struct Lambertian : IMaterial
+public class Lambertian : Material
 {
     public Vector3 albedo;
-    public bool Scatter(Ray rayIn, HitRecord rec, out Vector3 attenuation, out Ray scattered){
+    public override bool Scatter(Ray rayIn, HitRecord rec, out Vector3 attenuation, out Ray scattered){
         Vector3 scatterDir = rec.normal + Vector3Extensions.RandomInUnitSphere().normalized;
 
         if (scatterDir.NearZero()){

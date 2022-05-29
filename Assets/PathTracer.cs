@@ -52,7 +52,7 @@ public class PathTracer : MonoBehaviour
     }
 
     private void Render(){
-        List<IHittable> objects = GenerateRandomScene();
+        List<IHittable> objects = GenerateRandomSceneWithLight();
         BVHNode scene = new BVHNode(objects, 0, objects.Count);
         renderThreadArray = new RenderThreadArray(threadCount, pixels, texWidth, texHeight, pCamera, samples, maxDepth, scene);
         renderThreadArray.Render();
@@ -83,7 +83,7 @@ public class PathTracer : MonoBehaviour
                 Vector3 center = new Vector3(a + 0.9f * Random.Range(0f, 1f), 0.2f, b + 0.9f * Random.Range(0f, 1f));
 
                 if ((center - new Vector3(4f, 0.2f, 0)).magnitude > 0.9f){
-                    IMaterial mat;
+                    Material mat;
 
                     if (chooseMat < 0.33f){
                         Vector3 albedo = Vector3Extensions.Multiply(Vector3Extensions.RandomComps(0f, 1f), Vector3Extensions.RandomComps(0f, 1f));
@@ -111,6 +111,18 @@ public class PathTracer : MonoBehaviour
         scene.Add(new Sphere(new Vector3(4f, 1f, 0f), 1f, mat3));
 
         return scene;
+    }
+    List<IHittable> GenerateRandomSceneWithLight(){
+        List<IHittable> objects = new List<IHittable>();
+        Lambertian groundMat = new Lambertian(new Vector3(0.5f, 0.5f, 0.5f));
+        Lambertian centerPieceMat = new Lambertian(new Vector3(0.4f, 0.2f, 0.7f));
+        objects.Add(new Sphere(new Vector3(0f, -1000f, 0f), 1000f, groundMat));
+        objects.Add(new Sphere(new Vector3(0f, 2f, 0f), 2f, centerPieceMat));
+
+        DiffuseLight lightMat = new DiffuseLight(new Vector3(4f, 4f, 4f));
+        objects.Add(new XYRect(3, 5, 1, 3, -2, lightMat));
+        objects.Add(new Sphere(new Vector3(0f, 8f, 0f), 2f, lightMat));
+        return objects;
     }
     private void OnRenderImage(RenderTexture src, RenderTexture dest) {
         Graphics.Blit(renderTexture, dest);

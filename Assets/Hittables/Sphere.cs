@@ -6,7 +6,7 @@ public struct Sphere : IHittable
 {
     public Vector3 center;
     public float radius;
-    public IMaterial mat;
+    public Material mat;
 
     public bool Hit(Ray ray, float tMin, float tMax, HitRecord rec){
         Vector3 oc = ray.origin - center;
@@ -40,7 +40,7 @@ public struct Sphere : IHittable
         outputBox = new AABB(center - offset, center + offset);
         return true;
     }
-    public Sphere(Vector3 center, float radius, IMaterial mat){
+    public Sphere(Vector3 center, float radius, Material mat){
         this.center = center;
         this.radius = radius;
         this.mat = mat;
