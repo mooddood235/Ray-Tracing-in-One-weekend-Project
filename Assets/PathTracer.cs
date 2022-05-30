@@ -135,11 +135,11 @@ public class PathTracer : MonoBehaviour
         Lambertian red   = new Lambertian(new Vector3(0.65f, 0.05f, 0.05f));
         Lambertian white = new Lambertian(new Vector3(0.73f, 0.73f, 0.73f));
         Lambertian green = new Lambertian(new Vector3(0.12f, 0.45f, 0.15f));
-        DiffuseLight light = new DiffuseLight(new Vector3(15f, 15f, 15f));
+        DiffuseLight light = new DiffuseLight(new Vector3(7f, 7f, 7f));
 
         objects.Add(new YZRect(0, 555, 0, 555, 555, green));
         objects.Add(new YZRect(0, 555, 0, 555, 0, red));
-        objects.Add(new XZRect(213, 343, 227, 332, 554, light));
+        objects.Add(new XZRect(113, 443, 127, 432, 554, light));
         objects.Add(new XZRect(0, 555, 0, 555, 0, white));
         objects.Add(new XZRect(0, 555, 0, 555, 555, white));
         objects.Add(new XYRect(0, 555, 0, 555, 555, white));
@@ -147,12 +147,13 @@ public class PathTracer : MonoBehaviour
         IHittable box1 = new Box(new Vector3(0, 0, 0), new Vector3(165, 330, 165), white);
         box1 = new RotateY(box1, 15);
         box1 = new Translate(box1, new Vector3(265,0,295));
-        objects.Add(box1);
 
         IHittable box2 = new Box(new Vector3(0,0,0), new Vector3(165,165,165), white);
         box2 = new RotateY(box2, -18);
         box2 = new Translate(box2, new Vector3(130,0,65));
-        objects.Add(box2);
+
+        objects.Add(new ConstantMedium(box1, 0.01f, new Isotropic(Vector3.zero), (uint)Random.Range(1, 5000)));
+        objects.Add(new ConstantMedium(box2, 0.01f, new Isotropic(Vector3.one), (uint)Random.Range(1, 5000)));
         return objects;
     }
     private void SaveToPNG(){

@@ -325,6 +325,6 @@ MonoBehaviour:
   aperture: 0
   renderMode: 0
   samples: 10
-  maxDepth: 50
-  threadCount: 100
-  path: Render/Render.png
+  maxDepth: 3
+  threadCount: 16
+  path: 
