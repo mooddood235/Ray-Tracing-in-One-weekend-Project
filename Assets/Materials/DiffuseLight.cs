@@ -13,7 +13,6 @@ public class DiffuseLight : Material
     public override Vector3 Emitted(){
         return emission;
     }
-
     public DiffuseLight(Vector3 emission){
         this.emission = emission;
     }

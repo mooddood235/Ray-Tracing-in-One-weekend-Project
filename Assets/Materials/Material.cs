@@ -8,4 +8,7 @@ public abstract class Material
     public virtual Vector3 Emitted(){
         return Vector3.zero;
     }
+    public virtual Vector3 GetAlbedo(){
+        return Vector3.zero;
+    }
 }

@@ -16,7 +16,9 @@ public class Lambertian : Material
         attenuation = albedo;
         return true;
     }
-
+    public override Vector3 GetAlbedo(){
+        return albedo;
+    }
     public Lambertian(Vector3 albedo){
         this.albedo = albedo;
     }

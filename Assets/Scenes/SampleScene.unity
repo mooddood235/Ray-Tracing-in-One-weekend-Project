@@ -323,6 +323,8 @@ MonoBehaviour:
   focalLength: 1
   focusDist: 13.4
   aperture: 0
-  samples: 200
+  renderMode: 0
+  samples: 10
   maxDepth: 50
-  threadCount: 20
+  threadCount: 100
+  path: Render/Render.png

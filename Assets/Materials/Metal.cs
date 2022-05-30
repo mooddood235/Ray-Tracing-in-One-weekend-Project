@@ -13,7 +13,9 @@ public class Metal : Material
         attenuation = albedo;
         return Vector3.Dot(scattered.dir, rec.normal) > 0;
     }
-
+    public override Vector3 GetAlbedo(){
+        return albedo;
+    }
     public Metal(Vector3 albedo, float fuzz){
         this.albedo = albedo;
         this.fuzz = fuzz;

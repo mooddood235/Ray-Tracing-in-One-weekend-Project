@@ -22,11 +22,13 @@ public class PathTracer : MonoBehaviour
     [SerializeField] private float focusDist;
     [SerializeField] private float aperture;
     [Space]
+    [SerializeField] private RenderMode renderMode;
     [SerializeField] private uint samples;
     [SerializeField] private uint maxDepth;
     private RenderThreadArray renderThreadArray;
     [Space]
     [SerializeField] private uint threadCount;
+    [SerializeField] private string path;
 
     private Vector3[] pixels;
 
@@ -54,7 +56,8 @@ public class PathTracer : MonoBehaviour
     private void Render(){
         List<IHittable> objects = GenerateCornellBox();
         BVHNode scene = new BVHNode(objects, 0, objects.Count);
-        renderThreadArray = new RenderThreadArray(threadCount, pixels, texWidth, texHeight, pCamera, samples, maxDepth, scene);
+        renderThreadArray = new RenderThreadArray(
+        threadCount, pixels, texWidth, texHeight, pCamera, samples, maxDepth, scene, renderMode);
         renderThreadArray.Render();
     }
 
@@ -152,10 +155,27 @@ public class PathTracer : MonoBehaviour
         objects.Add(box2);
         return objects;
     }
+    private void SaveToPNG(){
+        if (path == "") return;
+        RenderTexture.active = renderTexture;
+        Texture2D tex = new Texture2D((int)texWidth, (int)texHeight);
+        tex.ReadPixels(new Rect(0, 0, texWidth, texHeight), 0, 0);
+        RenderTexture.active = null;
+
+        System.IO.File.WriteAllBytes(path, tex.EncodeToPNG());
+    }
     private void OnRenderImage(RenderTexture src, RenderTexture dest) {
         Graphics.Blit(renderTexture, dest);
     }
     private void OnApplicationQuit() {
-        renderThreadArray.Stop();
+        SaveToPNG();
+        renderThreadArray.Stop(); 
     }
+    public enum RenderMode{
+    Default,
+    Normals,
+    Albedo
+    }   
 }
+
+

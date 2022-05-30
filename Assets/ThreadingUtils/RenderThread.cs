@@ -19,7 +19,7 @@ public class RenderThread
     private IHittable scene;
     private Unity.Mathematics.Random rand;
     private bool stop;
-
+    private PathTracer.RenderMode renderMode;
 
     public void Render(){
         Thread thread = new Thread(ThreadRender);
@@ -51,7 +51,13 @@ public class RenderThread
             Ray scattered;
             Vector3 attenuation;
             if (rec.mat.Scatter(ray, rec, out attenuation, out scattered)){
-                return rec.mat.Emitted() + Vector3Extensions.Multiply(attenuation, GetPixelColor(scattered, scene, depth - 1));
+                if (renderMode == PathTracer.RenderMode.Default)
+                    return rec.mat.Emitted() + Vector3Extensions.Multiply(attenuation, GetPixelColor(scattered, scene, depth - 1));
+                else if (renderMode == PathTracer.RenderMode.Albedo)
+                    return rec.mat.GetAlbedo();
+                else {
+                    return rec.normal;
+                }
             }
             return rec.mat.Emitted();
         }
@@ -60,8 +66,8 @@ public class RenderThread
     private Vector3 SampleSkyBox(Ray ray){
         Vector3 unitDir = ray.dir.normalized;
         float t = 0.5f*(unitDir.y + 1f);
-        //return (1f - t) * new Vector3(1f, 1f, 1f) + t * new Vector3(0.5f, 0.7f, 1f);
-        return Vector3.zero;
+        return (1f - t) * new Vector3(1f, 1f, 1f) + t * new Vector3(0.5f, 0.7f, 1f);
+        //return Vector3.zero;
     }
     private void WriteColor(uint x, uint y, Vector3 color){
         color = (color / (float)samples).SqrtdComps().Clamped();
@@ -71,7 +77,9 @@ public class RenderThread
         stop = true;
     }
 
-    public RenderThread(Vector3[] pixels, uint x0, uint x1, uint y0, uint y1, uint texWidth, uint texHeight, PCamera pCamera, uint samples, uint maxDepth, IHittable scene){
+    public RenderThread(
+    Vector3[] pixels, uint x0, uint x1, uint y0, uint y1, uint texWidth, uint texHeight,
+    PCamera pCamera, uint samples, uint maxDepth, IHittable scene, PathTracer.RenderMode renderMode){
         this.pixels = pixels;
         this.x0 = x0;
         this.x1 = x1;
@@ -85,5 +93,6 @@ public class RenderThread
         this.scene = scene;
         this.stop = false;
         this.rand = new Unity.Mathematics.Random((uint)Random.Range(1, 5000));
+        this.renderMode = renderMode;
     }
 }

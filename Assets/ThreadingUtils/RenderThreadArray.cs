@@ -13,6 +13,7 @@ public class RenderThreadArray
     private uint samples;
     private uint maxDepth;
     private IHittable scene;
+    private PathTracer.RenderMode renderMode;
 
     public void Render(){
         foreach (RenderThread renderThread in renderThreads){
@@ -30,10 +31,13 @@ public class RenderThreadArray
         uint segment = texWidth / threadCount;
         for (uint i = 0; i < threadCount; i++){
             renderThreads[i] = new RenderThread(
-            pixels, i * segment, (i + 1) * segment - 1, 0, texHeight - 1, texWidth, texHeight, pCamera, samples, maxDepth, scene);
+            pixels, i * segment, (i + 1) * segment - 1, 0, texHeight - 1, texWidth, texHeight,
+            pCamera, samples, maxDepth, scene, renderMode);
         }
     }
-    public RenderThreadArray(uint threadCount, Vector3[] pixels, uint texWidth, uint texHeight, PCamera pCamera, uint samples, uint maxDepth, IHittable scene){
+    public RenderThreadArray(
+    uint threadCount, Vector3[] pixels, uint texWidth, uint texHeight,
+    PCamera pCamera, uint samples, uint maxDepth, IHittable scene, PathTracer.RenderMode renderMode){
         this.threadCount = threadCount;
         this.pixels = pixels;
         this.texWidth = texWidth;
@@ -42,6 +46,7 @@ public class RenderThreadArray
         this.samples = samples;
         this.maxDepth = maxDepth;
         this.scene = scene;
+        this.renderMode = renderMode;
         CreateRenderThreads();
     }
 }
