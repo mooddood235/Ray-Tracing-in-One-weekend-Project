@@ -52,7 +52,7 @@ public class PathTracer : MonoBehaviour
     }
 
     private void Render(){
-        List<IHittable> objects = GenerateRandomSceneWithLight();
+        List<IHittable> objects = GenerateCornellBox();
         BVHNode scene = new BVHNode(objects, 0, objects.Count);
         renderThreadArray = new RenderThreadArray(threadCount, pixels, texWidth, texHeight, pCamera, samples, maxDepth, scene);
         renderThreadArray.Render();
@@ -115,13 +115,41 @@ public class PathTracer : MonoBehaviour
     List<IHittable> GenerateRandomSceneWithLight(){
         List<IHittable> objects = new List<IHittable>();
         Lambertian groundMat = new Lambertian(new Vector3(0.5f, 0.5f, 0.5f));
-        Lambertian centerPieceMat = new Lambertian(new Vector3(0.4f, 0.2f, 0.7f));
+        //Lambertian centerPieceMat = new Lambertian(new Vector3(0.4f, 0.2f, 0.7f));
+        //Metal centerPieceMat = new Metal(new Vector3(0.5f, 0.2f, 0.7f), 0);
+        Dielectric centerPieceMat = new Dielectric(1.4f, (uint)Random.Range(1, 5000));
         objects.Add(new Sphere(new Vector3(0f, -1000f, 0f), 1000f, groundMat));
         objects.Add(new Sphere(new Vector3(0f, 2f, 0f), 2f, centerPieceMat));
 
         DiffuseLight lightMat = new DiffuseLight(new Vector3(4f, 4f, 4f));
         objects.Add(new XYRect(3, 5, 1, 3, -2, lightMat));
         objects.Add(new Sphere(new Vector3(0f, 8f, 0f), 2f, lightMat));
+        return objects;
+    }
+    List<IHittable> GenerateCornellBox(){
+        List<IHittable> objects = new List<IHittable>();
+
+        Lambertian red   = new Lambertian(new Vector3(0.65f, 0.05f, 0.05f));
+        Lambertian white = new Lambertian(new Vector3(0.73f, 0.73f, 0.73f));
+        Lambertian green = new Lambertian(new Vector3(0.12f, 0.45f, 0.15f));
+        DiffuseLight light = new DiffuseLight(new Vector3(15f, 15f, 15f));
+
+        objects.Add(new YZRect(0, 555, 0, 555, 555, green));
+        objects.Add(new YZRect(0, 555, 0, 555, 0, red));
+        objects.Add(new XZRect(213, 343, 227, 332, 554, light));
+        objects.Add(new XZRect(0, 555, 0, 555, 0, white));
+        objects.Add(new XZRect(0, 555, 0, 555, 555, white));
+        objects.Add(new XYRect(0, 555, 0, 555, 555, white));
+
+        IHittable box1 = new Box(new Vector3(0, 0, 0), new Vector3(165, 330, 165), white);
+        box1 = new RotateY(box1, 15);
+        box1 = new Translate(box1, new Vector3(265,0,295));
+        objects.Add(box1);
+
+        IHittable box2 = new Box(new Vector3(0,0,0), new Vector3(165,165,165), white);
+        box2 = new RotateY(box2, -18);
+        box2 = new Translate(box2, new Vector3(130,0,65));
+        objects.Add(box2);
         return objects;
     }
     private void OnRenderImage(RenderTexture src, RenderTexture dest) {
